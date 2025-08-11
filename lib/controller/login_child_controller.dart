@@ -37,7 +37,7 @@ try {
       Get.offAllNamed("/parentHome");
     }else{
       MySharedPrefference.saveUserType('child');
-      Get.offAllNamed("/Home");
+      Get.offAllNamed("/bottompage");
     }});
 
   }

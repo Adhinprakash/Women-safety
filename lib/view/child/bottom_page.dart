@@ -52,7 +52,7 @@ class _BottompageState extends State<Bottompage> {
                       iconData: Icons.contacts, text: "contacts"),
                   FABBottomAppBarItem(iconData: Icons.chat, text: "chat"),
                   FABBottomAppBarItem(
-                      iconData: Icons.rate_review, text: "Ratings"),
+                      iconData: Icons.rate_review, text: "Profile"),
                   FABBottomAppBarItem(
                       iconData: Icons.settings, text: "Settings"),
                 ],

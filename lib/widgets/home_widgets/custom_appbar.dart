@@ -4,6 +4,7 @@ import '../../utils/quotes.dart';
 
 
 class CustomAppBar extends StatelessWidget {
+  
   // const CustomAppBar({super.key});
   Function? onTap;
   int? quoteIndex;

@@ -37,7 +37,8 @@ class MyApp extends StatelessWidget {
       ), // Create HomePage
       GetPage(name: '/registerChild', page: ()=>const RegisterChild()),
       GetPage(name: '/registerParent', page: ()=>const RegisterParentPage()),
-      GetPage(name: '/parentHome', page: ()=>const ParentHome())
+      GetPage(name: '/parentHome', page: ()=>const ParentHome()),
+      GetPage(name: '/bottompage', page: ()=>const Bottompage())
       ],
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
