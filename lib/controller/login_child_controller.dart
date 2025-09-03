@@ -24,6 +24,7 @@ try {
   UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(
     email: formData['email'].toString(),
     password: formData['password'].toString(),
+
   );
       Get.back(); 
 
@@ -32,6 +33,8 @@ try {
 
     FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get().then((value) {
       print(value['type']);
+            print(value['type']);
+
      if(value['type']=='parent'){
       MySharedPrefference.saveUserType('parent');
       Get.offAllNamed("/parentHome");
