@@ -28,7 +28,6 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  background_sms: null
   carousel_slider: ^5.0.0
   cloud_firestore: ^5.6.8
   cupertino_icons: ^1.0.8
@@ -41,15 +40,17 @@ dependencies:
   flutter_phone_direct_caller: ^2.2.1
   flutter_svg: ^2.1.0
   fluttertoast: ^8.2.12
-  # geocoder: 
-  geocoding: ^2.1.1
   get: ^4.7.2
   google_fonts: ^6.2.1
   http: ^1.4.0
+  location: ^7.0.1
   lottie: ^3.2.0
   permission_handler: ^12.0.0+1
   shared_preferences: ^2.5.3
   sqflite: ^2.4.1
+  telephony:
+    path: ./plugins/telephony-0.2.0
+ 
   url_launcher: ^6.3.1
 
 dev_dependencies:

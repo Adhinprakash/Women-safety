@@ -13,6 +13,8 @@ class ContactsController extends GetxController {
   RxList<Contact> contactsFiltered = <Contact>[].obs;
 
 
+
+
   Future<void> askPermission() async {
     PermissionStatus permissionStatus = await getallcontactspermission();
     if (permissionStatus == PermissionStatus.granted) {

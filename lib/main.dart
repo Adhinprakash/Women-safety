@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:women_saftey/bindings.dart';
 import 'package:women_saftey/controller/login_child_controller.dart';
 import 'package:women_saftey/db/sharedprefereces.dart';
 import 'package:women_saftey/firebase_options.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: "/loginChild",
+      initialBinding: LocationBinding(),
       getPages: [
             GetPage(name: '/loginChild', page: () => LoginChildScreen(),binding: BindingsBuilder(()=>LoginChildController())),
       GetPage(name: '/Home', page: () => HomeScreen(),

@@ -1,145 +1,21 @@
-import 'package:background_sms/background_sms.dart';
-import 'package:fl_location/fl_location.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
+import 'package:women_saftey/controller/safe_home_controller.dart';
+import 'package:women_saftey/db/database_helper.dart';
+import 'package:women_saftey/model/contacts_model.dart';
+import 'package:location/location.dart';
+import 'package:http/http.dart'as http;
+import 'package:women_saftey/utils/consts.dart';
 
-class SafeHome extends StatefulWidget {
-  @override
-  State<SafeHome> createState() => _SafeHomeState();
-}
 
-class _SafeHomeState extends State<SafeHome> {
-  String? _currentaddress;
-  String? _curentPosition;
-  bool _serviceEnabled = false;
-  PermissionStatus _permissionGranted = PermissionStatus.denied;
-
-  _getpermission() async => await [Permission.sms].request();
-  _isPermissiongranted() async => await Permission.sms.isGranted;
-
-  // __getcurrentlocation() async {
-  //   try {
-  //     // Check if location service is enabled
-  //     bool serviceEnabled = await FlLocation.isLocationServicesEnabled;
-  //     if (!serviceEnabled) {
-  //       Fluttertoast.showToast(msg: "Location service is disabled");
-  //       return;
-  //     }
-
-  //     // Check location permission
-  //     LocationPermission permission =
-  //         await FlLocation.checkLocationPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       permission = await FlLocation.requestLocationPermission();
-  //       if (permission == LocationPermission.denied) {
-  //         Fluttertoast.showToast(msg: "Location permission denied");
-  //         return;
-  //       }
-  //     }
-
-  //     if (permission == LocationPermission.deniedForever) {
-  //       Fluttertoast.showToast(msg: "Location permission denied forever");
-  //       return;
-  //     }
-
-  //     // Get current location
-  //     Location locationData = await FlLocation.getLocation(
-  //       accuracy: LocationAccuracy.high,
-  //       timeLimit: Duration(seconds: 10),
-  //     );
-
-  //     setState(() {
-  //       _currentposition = locationData;
-  //     });
-
-  //     // Get address from coordinates
-  //     _getcurrentaddressLocation();
-
-  //     Fluttertoast.showToast(msg: "Location retrieved successfully");
-  //   } catch (error) {
-  //     print("Error getting location: $error");
-  //     Fluttertoast.showToast(msg: "Failed to get current location: $error");
-  //   }
-  // }
-
-  _sendSms(String phonenumber, String message, {int? simSlot}) async {
-    await BackgroundSms.sendMessage(
-            phoneNumber: phonenumber, message: message, simSlot: simSlot)
-        .then(
-      (SmsStatus status) {
-        if (status == 'send') {
-          Get.snackbar(
-            "Send",
-            "sms send successfully",
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        } else {
-          Get.snackbar(
-            "Fail",
-            "Failed to send sms",
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        }
-      },
-    );
-  }
-
-// _getcurrentlocation()async{
-//   try {
-
-//     bool _isserviceenable= await
-
-//   } catch (e) {
-
-//   }
-// }
-
-  // _getcurrentlocation() async {
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     Fluttertoast.showToast(msg: "Location permission denied");
-  //   }
-  //   if (permission == LocationPermission.deniedForever) {
-  //     Fluttertoast.showToast(msg: "Location permission denied forever");
-  //   }
-  //   if (permission == LocationPermission.whileInUse) {
-  //     _currentposition = await Geolocator.getCurrentPosition();
-  //   }
-  //   Geolocator.getCurrentPosition(
-  //           desiredAccuracy: LocationAccuracy.high,
-  //           forceAndroidLocationManager: true)
-  //       .then((Position position) {
-  //     setState(() {
-  //       _currentposition = position;
-  //       _getcurrentaddressLocation();
-  //     });
-  //   }).catchError((error) {
-  //     Fluttertoast.showToast(msg: "Failed to get current location");
-  //   });
-  // }
-
-  // _getcurrentaddressLocation() async {
-  //   List<Placemark> placemarks = await placemarkFromCoordinates(
-  //       _curentPosition!, _curentPosition!.longitude);
-  //   Placemark? place = placemarks[0];
-  //   setState(() {
-  //     _currentaddress =
-  //         '${place.street},${place.subAdministrativeArea},${place.administrativeArea}';
-  //   });
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    // _getcurrentaddressLocation();
-  }
-
+class SafeHome extends StatelessWidget {
   showModelSafeHome(BuildContext context) {
+    final SafeHomeController safeHomeController=Get.put(SafeHomeController());
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -156,17 +32,141 @@ class _SafeHomeState extends State<SafeHome> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "SEND YOUR CUURENT LOCATION IMMEDIATELY TO YOU EMERGENCY CONTACTS",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 20),
                 ),
-                if (_curentPosition != null) Text(_currentaddress ?? ''),
-                PrimaryButton(title: "Get location", onPressed: () {}),
+                Obx((){
+                  if(safeHomeController.hasAddress&&safeHomeController.hasLocation)
+                  return 
+                   Padding(
+                  padding: const EdgeInsets.only(left: 30),
+                  child: 
+                  
+                  Text(
+                    
+                            safeHomeController.currentaddress.value!,
+                            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                          ),
+                );
+                return Text(
+                      'Location not obtained yet. Click "Get Location" first.',
+                      style: TextStyle(color: Colors.orange[700]),
+                    );
+                })
+               
+                        //  Text(
+                        //   'Lat: ${_curentPosition!.latitude!.toStringAsFixed(6)}, '
+                        //   'Lng: ${_curentPosition!.longitude!.toStringAsFixed(6)}',
+                        //   style: TextStyle(
+                        //     fontSize: 12, 
+                        //     color: Colors.grey[600],
+                        //     fontFamily: 'monospace',
+                        //   ),
+                        // ),
+
+                        ,
+
+                Obx((){
+ return PrimaryButton(
+loading: safeHomeController.isgettingLocation.value,
+                  
+                                title:safeHomeController.isgettingLocation.value ? "Getting Location..." : "GET LOCATION", 
+  
+               onPressed:()async{
+               safeHomeController.getcurrentLocation();
+               });
+                }),
                 const SizedBox(
                   height: 10,
                 ),
-                PrimaryButton(title: "Send alert", onPressed: () {})
+                // PrimaryButton(title: "Send alert", onPressed: () {})
+                   PrimaryButton(
+                  title: "SEND ALERT",
+                  onPressed: () async {
+                    if (!safeHomeController.hasLocation) {
+                      Fluttertoast.showToast(
+                        msg: "Please get your location first!",
+                        backgroundColor: Colors.orange,
+                        textColor: Colors.white,
+                      );
+                      return;
+                    }
+
+                    // Show confirmation dialog
+                    bool? shouldSend = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('⚠️ Send Emergency Alert?'),
+                          content: Text(
+                            'This will send your current location to your emergency contacts.\n\n'
+                            'Are you sure you want to proceed?'
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                              child: Text('Send Alert', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (shouldSend != true) return;
+
+                    // Show loading dialog
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Text('Sending emergency alerts...'),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+
+                    try {
+                      // Send emergency alert using controller
+                      Map<String, bool> results = await safeHomeController.sendEmergencyAlert();
+                      
+                      // Close loading dialog
+                      Navigator.of(context).pop();
+
+                      if (results.isNotEmpty) {
+                        // Close the bottom sheet
+                        Navigator.of(context).pop();
+                        
+                        // Show results
+                        _showSmsResults(context, results);
+                      }
+
+                    } catch (e) {
+                      // Close loading dialog if open
+                      if (Navigator.canPop(context)) {
+                        Navigator.of(context).pop();
+                      }
+                      
+                      Fluttertoast.showToast(
+                        msg: "Error sending alert: ${e.toString()}",
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -210,6 +210,68 @@ class _SafeHomeState extends State<SafeHome> {
   }
 }
 
+
+  void _showSmsResults(BuildContext context, Map<String, bool> results) {
+    int successCount = results.values.where((success) => success).length;
+    int totalCount = results.length;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('SMS Status Report'),
+          content: Container(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Emergency alerts sent: $successCount/$totalCount',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      final entry = results.entries.elementAt(index);
+                      final phoneNumber = entry.key;
+                      final success = entry.value;
+                      
+                      return ListTile(
+                        leading: Icon(
+                          success ? Icons.check_circle : Icons.error,
+                          color: success ? Colors.green : Colors.red,
+                        ),
+                        title: Text('Contact ${index + 1}'),
+                        subtitle: Text(phoneNumber),
+                        trailing: Text(
+                          success ? 'Sent' : 'Failed',
+                          style: TextStyle(
+                            color: success ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 class PrimaryButton extends StatelessWidget {
   final String title;
   final Function onPressed;
@@ -223,7 +285,7 @@ class PrimaryButton extends StatelessWidget {
       height: 50,
       width: MediaQuery.of(context).size.width * 0.5,
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: ()async {
           onPressed();
         },
         child: Text(

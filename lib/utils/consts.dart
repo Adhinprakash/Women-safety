@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 const Color kColorDarkRed = Color(0xFFB83B5E);
 const Color kColorLightRed = Color(0xFFE23E57);
@@ -10,6 +11,8 @@ const Color kColorBlue = Color(0xFF011ACD);
 const Color darkGrey = Color(0xff707070);
 const Color darkGreen = Color(0xff13D900);
 const Color lightGrey = Color(0xff13D900);
+const Color kwhite= Color.fromARGB(255, 244, 246, 244);
+
 
 void goTo(BuildContext context, Widget nextScreen) {
   Navigator.push(
@@ -27,6 +30,15 @@ dialogueBox(BuildContext context, String text) {
     ),
   );
 }
+
+  void showToast(String message, Color backgroundColor) {
+    Fluttertoast.showToast(
+      msg: message,
+      backgroundColor: backgroundColor,
+      textColor: Colors.white,
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  }
 
 Widget progressIndicator(BuildContext context) {
   return Center(
