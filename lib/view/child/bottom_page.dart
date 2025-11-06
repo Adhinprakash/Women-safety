@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:women_saftey/components/fab_bar_button.dart';
 import 'package:women_saftey/view/child/bottom_pages/add_contact_page.dart';
 import 'package:women_saftey/view/child/bottom_pages/chat_page.dart';
-import 'package:women_saftey/view/child/bottom_pages/contact_page.dart';
 import 'package:women_saftey/view/child/bottom_pages/home_screen.dart';
 import 'package:women_saftey/view/child/bottom_pages/profile_page.dart';
 import 'package:women_saftey/view/child/bottom_pages/review_page.dart';
@@ -40,6 +39,7 @@ class _BottompageState extends State<Bottompage> {
           return true;
         },
         child: DefaultTabController(
+        
           initialIndex: currentIndex,
           length: pages.length,
           child: Scaffold(

@@ -45,6 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+          backgroundColor: const Color.fromARGB(255, 207, 166, 210),
       appBar: AppBar(
         backgroundColor: Colors.pink,
         title: Text(widget.friendName),
@@ -58,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       .doc(widget.currentUserId)
                       .collection("messages")
                       .doc(widget.friendId)
-                      .collection("chats")
+                      .collection("chats").orderBy('date',descending: false)
                       .snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {

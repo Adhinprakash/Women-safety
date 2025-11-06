@@ -6,11 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:women_saftey/controller/safe_home_controller.dart';
-import 'package:women_saftey/db/database_helper.dart';
-import 'package:women_saftey/model/contacts_model.dart';
 import 'package:location/location.dart';
-import 'package:http/http.dart'as http;
-import 'package:women_saftey/utils/consts.dart';
 
 
 class SafeHome extends StatelessWidget {
@@ -38,8 +34,8 @@ class SafeHome extends StatelessWidget {
                   style: TextStyle(fontSize: 20),
                 ),
                 Obx((){
-                  if(safeHomeController.hasAddress&&safeHomeController.hasLocation)
-                  return 
+                  if(safeHomeController.hasAddress&&safeHomeController.hasLocation) {
+                    return 
                    Padding(
                   padding: const EdgeInsets.only(left: 30),
                   child: 
@@ -50,6 +46,7 @@ class SafeHome extends StatelessWidget {
                             style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                           ),
                 );
+                  }
                 return Text(
                       'Location not obtained yet. Click "Get Location" first.',
                       style: TextStyle(color: Colors.orange[700]),
@@ -94,7 +91,6 @@ loading: safeHomeController.isgettingLocation.value,
                       return;
                     }
 
-                    // Show confirmation dialog
                     bool? shouldSend = await showDialog<bool>(
                       context: context,
                       builder: (BuildContext context) {
@@ -121,7 +117,6 @@ loading: safeHomeController.isgettingLocation.value,
 
                     if (shouldSend != true) return;
 
-                    // Show loading dialog
                     showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -139,10 +134,8 @@ loading: safeHomeController.isgettingLocation.value,
                     );
 
                     try {
-                      // Send emergency alert using controller
                       Map<String, bool> results = await safeHomeController.sendEmergencyAlert();
                       
-                      // Close loading dialog
                       Navigator.of(context).pop();
 
                       if (results.isNotEmpty) {

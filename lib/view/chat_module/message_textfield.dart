@@ -1,7 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:women_saftey/utils/consts.dart';
+import 'dart:async';
+import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
+import 'package:women_saftey/controller/chat_controller.dart';
+import 'package:women_saftey/controller/safe_home_controller.dart';
+import 'package:women_saftey/utils/consts.dart';
+import 'package:image_picker/image_picker.dart';
 class ModernMessageInput extends StatefulWidget {
   final String? hintText;
   final Color? primaryColor;
@@ -26,6 +35,12 @@ class _ModernMessageInputState extends State<ModernMessageInput>
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  String? message='';
+      final SafeHomeController safeHomeController=Get.find<SafeHomeController>();
+      File? imagefile;
+          // final ChatController chatController =Get.find<ChatController>();
+
+
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   bool _hasText = false;
@@ -68,15 +83,46 @@ class _ModernMessageInputState extends State<ModernMessageInput>
     super.dispose();
   }
 
-  void _sendMessage()async {
+Future getImage()async{
+  ImagePicker imagepicker= ImagePicker();
+
+  await imagepicker.pickImage(source: ImageSource.gallery).then((XFile? xfile){
+    if(xfile!=null){
+imagefile=File(xfile.path);
+uploadImage();
+    }
+  });
+}
+
+Future uploadImage()async{
+int status=1;
+
+String filename=Uuid().v1();
+
+
+var ref=  FirebaseStorage.instance.ref().child('images').child('$filename.jpg');
+var uploadtask= await ref.putFile(imagefile!).catchError((error){
+ return Fluttertoast.showToast(msg: error.toString());
+});
+if(status==1){
+String imageurl = await uploadtask.ref.getDownloadURL();
+ _sendMessage(imageurl, "img");
+};
+}
+
+  void _sendMessage(String? message,String type)async {
+
+  
+  // _controller.clear();
+
     await FirebaseFirestore.instance.collection("users").
     doc(widget.currentId).collection('messages')
     .doc(widget.friendId).
     collection('chats').add({
       "senderId":widget.currentId,
       "receiverId":widget.friendId,
-      "message":_controller.text,
-      "type":"text",
+      "message":message,
+      "type":type,
       "date":DateTime.now()
     });
      await FirebaseFirestore.instance.collection("users").
@@ -85,8 +131,8 @@ class _ModernMessageInputState extends State<ModernMessageInput>
     collection('chats').add({
       "senderId":widget.currentId,
       "receiverId":widget.friendId,
-      "message":_controller.text,
-      "type":"text",
+      "message":message,
+      "type":type,
       "date":DateTime.now()
     });
 
@@ -165,7 +211,6 @@ class _ModernMessageInputState extends State<ModernMessageInput>
                               ),
                             )
                     ),
-                    onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
                 AnimatedContainer(
@@ -177,7 +222,11 @@ class _ModernMessageInputState extends State<ModernMessageInput>
                     borderRadius: BorderRadius.circular(20),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
-                      onTap: _hasText ? _sendMessage : null,
+                      onTap: ()async{
+                        message=_controller.text;
+                        _sendMessage(message, 'text');
+                        _controller.clear();
+                      },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         curve: Curves.easeInOut,
@@ -200,6 +249,7 @@ class _ModernMessageInputState extends State<ModernMessageInput>
                           ),
                         ),
                       ),
+                      
                     ),
                   ),
                 ),
@@ -214,23 +264,30 @@ class _ModernMessageInputState extends State<ModernMessageInput>
     return Container(
       height: MediaQuery.of(context).size.height * 0.2,
       width: double.infinity,
-      child: Card(
+      child:Card(
         margin: const EdgeInsets.all(18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child:  Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-      chatsIcon(Icons.location_pin, "location", (){
+      chatsIcon(Icons.location_pin, "location", ()async{
+await safeHomeController.getcurrentLocation();
 
+Future.delayed(Duration(seconds: 2),(){
+String messagebody= "https://www.google.com/maps/search/?api=1&query=${safeHomeController.currentposition.value!.latitude}%2C${safeHomeController.currentposition.value!.longitude}";
+ _sendMessage(messagebody, "link");
+Navigator.pop(context);
+});
       }),
-      chatsIcon(Icons.location_pin, "location", (){
+      chatsIcon(Icons.camera_alt, "camera", ()async{
         
-      }),chatsIcon(Icons.location_pin, "location", (){
         
+      }),chatsIcon(Icons.photo, "Photo", ()async{
+        getImage();
       })
           ],
         ),
-      ),
+      )
     );
   }
     chatsIcon(IconData icons, String title, VoidCallback onTap) {

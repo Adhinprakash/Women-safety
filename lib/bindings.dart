@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/bindings_interface.dart';
+import 'package:women_saftey/controller/chat_controller.dart';
 import 'package:women_saftey/controller/safe_home_controller.dart';
 
 class LocationBinding extends Bindings {
@@ -8,7 +9,8 @@ class LocationBinding extends Bindings {
   void dependencies() {
     // Lazy initialization - controller will be created when first used
     Get.lazyPut<SafeHomeController>(() => SafeHomeController());
-    
+        // Get.lazyPut<ChatController>(() => ChatController());
+
     // Or use Get.put for immediate initialization
     // Get.put<LocationController>(LocationController());
   }

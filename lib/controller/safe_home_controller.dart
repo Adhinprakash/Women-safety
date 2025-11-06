@@ -26,7 +26,6 @@ class SafeHomeController extends GetxController{
  @override
   void onInit() {
     super.onInit();
-    // Automatically get location when controller is initialized
     getcurrentLocation();
   }
      
@@ -55,6 +54,10 @@ class SafeHomeController extends GetxController{
   Future<bool>sendSms(String phoneNumber,String message)async{
 
     try {
+
+            String testmsgbody="Emergency test from safety app app";
+
+      String sanitizednum=phoneNumber.replaceAll(' ', '');
       bool issend=await checkSmsPermission();
 
       if(!issend){
@@ -62,13 +65,12 @@ class SafeHomeController extends GetxController{
         return false;
       }
 
+ print(sanitizednum);
 
-      // Create a completer to handle the async status
       Completer<bool> completer = Completer<bool>();
       bool statusReceived = false;
-
       await telephony.sendSms(
-        to: phoneNumber,
+        to: sanitizednum,
         message: message,
         statusListener: (SendStatus status) {
           print('SMS Status for $phoneNumber: ${status.toString()}');
@@ -115,16 +117,15 @@ class SafeHomeController extends GetxController{
 
       // Create emergency message
       String googleMapsLink = "https://www.google.com/maps/search/?api=1&query=${currentposition.value!.latitude}%2C${currentposition.value!.longitude}";
-      String messageBody = "🆘 EMERGENCY ALERT 🆘\n\n"
-          "I am in trouble and need help!\n\n"
-          "📍 My current location:\n"
-          "${currentaddress.value ?? 'Address unavailable'}\n\n"
-          "🗺️ View on Google Maps:\n"
+      String messageBody = 
+      "🆘 EMERGENCY ALERT 🆘\n\n"
+      //     "I am in trouble and need help!\n\n"
+          
           "$googleMapsLink\n\n"
-          "GPS: ${currentposition.value!.latitude}, ${currentposition.value!.longitude}\n"
-          "Accuracy: ${currentposition.value!.accuracy?.toStringAsFixed(1) ?? 'Unknown'}m\n"
-          "Time: ${DateTime.now().toString().split('.')[0]}\n\n"
-          "Please contact me or emergency services immediately!";
+
+          // "GPS: ${currentposition.value!.latitude}, ${currentposition.value!.longitude}\n"
+          // "Time: ${DateTime.now().toString().split('.')[0]}\n\n"
+          ;
 
       // Send SMS to all contacts
       Map<String, bool> results = {};
@@ -138,7 +139,6 @@ class SafeHomeController extends GetxController{
       }
 
 
-      // Show result
       if (successCount > 0) {
         showToast(
           "Emergency alert sent to $successCount/${contactList.length} contacts!",
@@ -205,7 +205,6 @@ Future<void>getcurrentLocation()async{
         return;
       }
 
-      // Check location permission
       bool hasPermission = await _checkLocationPermission();
       if (!hasPermission) {
         Fluttertoast.showToast(

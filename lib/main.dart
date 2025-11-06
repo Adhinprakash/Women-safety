@@ -13,12 +13,12 @@ import 'package:women_saftey/view/child/bottom_pages/home_screen.dart';
 import 'package:women_saftey/view/child/login_child_screen.dart';
 import 'package:women_saftey/view/prarent/parent_home.dart';
 import 'package:women_saftey/view/prarent/register_parent_page.dart';
-
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
   await MySharedPrefference.init();
   runApp(const MyApp());
 }
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             GetPage(name: '/loginChild', page: () => LoginChildScreen(),binding: BindingsBuilder(()=>LoginChildController())),
       GetPage(name: '/Home', page: () => HomeScreen(),
       
-      ), // Create HomePage
+      ), 
       GetPage(name: '/registerChild', page: ()=>const RegisterChild()),
       GetPage(name: '/registerParent', page: ()=>const RegisterParentPage()),
       GetPage(name: '/parentHome', page: ()=>const ParentHome()),
