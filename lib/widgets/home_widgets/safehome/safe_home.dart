@@ -6,7 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:women_saftey/controller/safe_home_controller.dart';
-import 'package:location/location.dart';
 
 
 class SafeHome extends StatelessWidget {
@@ -96,7 +95,7 @@ loading: safeHomeController.isgettingLocation.value,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text('⚠️ Send Emergency Alert?'),
-                          content: Text(
+                          content: const Text(
                             'This will send your current location to your emergency contacts.\n\n'
                             'Are you sure you want to proceed?'
                           ),
@@ -139,10 +138,8 @@ loading: safeHomeController.isgettingLocation.value,
                       Navigator.of(context).pop();
 
                       if (results.isNotEmpty) {
-                        // Close the bottom sheet
                         Navigator.of(context).pop();
                         
-                        // Show results
                         _showSmsResults(context, results);
                       }
 

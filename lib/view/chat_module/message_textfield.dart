@@ -95,19 +95,26 @@ uploadImage();
 }
 
 Future uploadImage()async{
-int status=1;
+  if (imagefile == null) {
+      Fluttertoast.showToast(msg: "No image selected");
+      return;
+    }
+try {
+String? imageurl= await safeHomeController.uploadImagetocloudinary(imagefile!) ;   
+    
 
-String filename=Uuid().v1();
+      if (imageurl != null) {
+        _sendMessage(imageurl, "img");
+        Fluttertoast.showToast(msg: "Image sent successfully");
+        Navigator.pop(context); 
+      } else {
+        Fluttertoast.showToast(msg: "Failed to upload image");
+      }
+} catch (e) {
+  
+}
 
 
-var ref=  FirebaseStorage.instance.ref().child('images').child('$filename.jpg');
-var uploadtask= await ref.putFile(imagefile!).catchError((error){
- return Fluttertoast.showToast(msg: error.toString());
-});
-if(status==1){
-String imageurl = await uploadtask.ref.getDownloadURL();
- _sendMessage(imageurl, "img");
-};
 }
 
   void _sendMessage(String? message,String type)async {
@@ -123,7 +130,7 @@ String imageurl = await uploadtask.ref.getDownloadURL();
       "receiverId":widget.friendId,
       "message":message,
       "type":type,
-      "date":DateTime.now()
+      "date":DateTime.now() 
     });
      await FirebaseFirestore.instance.collection("users").
     doc(widget.friendId).collection('messages')
@@ -223,6 +230,8 @@ String imageurl = await uploadtask.ref.getDownloadURL();
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
                       onTap: ()async{
+                          FocusScope.of(context).unfocus(); 
+
                         message=_controller.text;
                         _sendMessage(message, 'text');
                         _controller.clear();
@@ -281,7 +290,7 @@ Navigator.pop(context);
       }),
       chatsIcon(Icons.camera_alt, "camera", ()async{
         
-        
+      getImage();
       }),chatsIcon(Icons.photo, "Photo", ()async{
         getImage();
       })

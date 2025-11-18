@@ -1,9 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:women_saftey/controller/caller_controller.dart';
 
 class PoliceEmergency extends StatelessWidget {
-    //  CallerController callerController=Get.put(CallerController());
+     CallerController callerController=Get.put(CallerController());
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class PoliceEmergency extends StatelessWidget {
         ),
         child: InkWell(
           onTap:(){
-            // callerController.callnumber('10');
+            callerController.callnumber('1000');
           } ,
           child: Container(
             height: 180,

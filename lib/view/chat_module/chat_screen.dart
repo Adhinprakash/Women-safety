@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:women_saftey/utils/consts.dart';
 import 'package:women_saftey/view/chat_module/message_textfield.dart';
 import 'package:women_saftey/view/chat_module/single_message.dart';
@@ -19,8 +20,17 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  
   String? type;
   String? myname;
+
+  final ScrollController _scrollController = ScrollController();
+void scrollToBottom() {
+  if (_scrollController.hasClients) {
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
+}
+
   getstatus() async {
     await FirebaseFirestore.instance
         .collection("users")
@@ -43,6 +53,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+//     WidgetsBinding.instance.addPersistentFrameCallback((_){
+// scrollToBottom();
+//     });
     return SafeArea(
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 207, 166, 210),
@@ -73,23 +86,50 @@ class _ChatScreenState extends State<ChatScreen> {
                             style: TextStyle(fontSize: 30),
                           ),
                         );
+
                       }
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+    scrollToBottom();
+  });
                       return Container(
                         child: ListView.builder(
+                          controller: _scrollController,
+
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (BuildContext context, int index) {
                               bool isMe = snapshot.data!.docs[index]
                                       ['senderId'] ==
                                   widget.currentUserId;
                               final data = snapshot.data!.docs[index];
-                              return SingleMessage(
+                              return Dismissible(
+                                onDismissed: (direction) {
+                                  
+                                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(widget.currentUserId)
+                      .collection("messages")
+                      .doc(widget.friendId)
+                      .collection("chats").doc(data.id).delete();
+  
+                                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(widget.friendId)
+                      .collection("messages")
+                      .doc(widget.currentUserId)
+                      .collection("chats").doc(data.id).delete().then((value)=>Fluttertoast.showToast(msg: "Message deleted successfuly"));
+
+
+                                },
+                                key:
+                              UniqueKey()
+                               , child: SingleMessage(
                                 message: data['message'],
                                 date: data['date'],
                                 isMe: isMe,
                                 friendName: widget.friendName,
                                 myName: myname,
                                 type: data['type'],
-                              );
+                              ));
                             }),
                       );
                     }

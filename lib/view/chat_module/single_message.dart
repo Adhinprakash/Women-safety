@@ -38,7 +38,7 @@ class SingleMessage extends StatelessWidget {
           decoration: BoxDecoration(
             color: isMe! ? const Color.fromARGB(255, 67, 115, 61) : Colors.black,
             borderRadius: isMe!
-                ? BorderRadius.only(
+                ? const BorderRadius.only(
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15),
                     bottomLeft: Radius.circular(15),
@@ -88,7 +88,7 @@ class SingleMessage extends StatelessWidget {
           decoration: BoxDecoration(
             color: isMe! ? const Color.fromARGB(255, 67, 115, 61) : Colors.black,
             borderRadius: isMe!
-                ? BorderRadius.only(
+                ? const BorderRadius.only(
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15),
                     bottomLeft: Radius.circular(15),
