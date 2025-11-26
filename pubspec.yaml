@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  background_location:
   cached_network_image: ^3.4.1
   carousel_slider: ^5.0.0
   cloud_firestore: ^5.6.8
@@ -39,7 +40,10 @@ dependencies:
   fl_location: ^5.0.0
   flutter:
     sdk: flutter
+  flutter_background_service: null
+  flutter_background_service_android: null
   flutter_contacts: ^1.1.9+2
+  flutter_local_notifications: null
   flutter_phone_direct_caller: ^2.2.1
   flutter_svg: ^2.1.0
   fluttertoast: ^8.2.12
@@ -50,12 +54,14 @@ dependencies:
   location: ^7.0.1
   lottie: ^3.2.0
   permission_handler: ^12.0.0+1
+  shake: null
   shared_preferences: ^2.5.3
   sqflite: ^2.4.1
   telephony:
     path: ./plugins/telephony-0.2.0
   url_launcher: ^6.3.1
   uuid: ^4.5.1
+  vibration: 
 
 dev_dependencies:
   flutter_lints: ^4.0.0

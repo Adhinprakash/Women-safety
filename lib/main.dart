@@ -6,6 +6,7 @@ import 'package:women_saftey/bindings.dart';
 import 'package:women_saftey/controller/login_child_controller.dart';
 import 'package:women_saftey/db/sharedprefereces.dart';
 import 'package:women_saftey/firebase_options.dart';
+import 'package:women_saftey/services/background_service.dart';
 import 'package:women_saftey/utils/consts.dart';
 import 'package:women_saftey/view/child/bottom_page.dart';
 import 'package:women_saftey/view/child/register_child.dart';
@@ -21,6 +22,7 @@ void main() async {
   );
 
   await MySharedPrefference.init();
+  await initializeService();
   runApp(const MyApp());
 }
 
